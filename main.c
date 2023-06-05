@@ -81,7 +81,7 @@ int main(int argc, char* argv[]){
     int j;
     bool status;
     char* file_name;
-    short amp_x_bits = 0.4*0x8000; // Keep a reasonable volume, hex is bitran
+    const short BIT_RANGE = 0x8000; // Keep a reasonable volume, hex is bitran
 
     srand((unsigned) time(&t));
     sound = (short*) malloc( sizeof(short) * N_SAMPLE_PAIRS * N_CHANNELS );
@@ -92,49 +92,61 @@ int main(int argc, char* argv[]){
         return (EXIT_FAILURE);
     }
 
-    for (i = 0, j = 0; i < N_SAMPLE_PAIRS * N_CHANNELS; i += 2, j++ )
+    for (i = 0, j = 0; i < N_SAMPLE_PAIRS * N_CHANNELS; i += 2, j++)
     {
 
+	// Form:
+	// Starting with dust, adjust the densities over time, find a way to modularize the code as needed, or make multiple files. Explore how to move the
+	// wav encoder into its own header for clarity.
+	// Move to have ranges of samples or durations of sines to get the sine sound.
 	short datum1;
+   	
+	  
+	// Keep exploring this
+	int x;   
+	if (j % 2 == 0 || j % 3 == 0 || j % 5 == 0) {	
+		datum1 = (0.4*BIT_RANGE)*(sin(2*PI*(110)*i/SAMPLE_RATE));
+	} else {
+		datum1 = (0.0*BIT_RANGE)*(sin(2*PI*110*i/SAMPLE_RATE));
+	}
+
 	/*
-	// Works for reaching that sample and changing event
-	if (j < 300000) {
-		datum1 = amp_x_bits*(sin(2*PI*240*i/SAMPLE_RATE));
-	} else if (j > 300001 && j < 700000) {
-		datum1 = amp_x_bits*(sin(2*PI*440*i/SAMPLE_RATE));
-	} else if (j > 700001 && j < 900000) {
-		datum1 = amp_x_bits*(sin(2*PI*880*i/SAMPLE_RATE));
-	} else if (j > 900001) {
-		datum1 = amp_x_bits*(sin(2*PI*190*i/SAMPLE_RATE));
+	 else if (j % 3211 == 0) {
+		datum1 = (rand()*BIT_RANGE)*(sin(2*PI*3440*i/SAMPLE_RATE));
+		j++;
+	} else if (j % 5121 == 0) {
+		datum1 = (rand()*BIT_RANGE)*(sin(2*PI*4240*i/SAMPLE_RATE));
+		j++;
+	} else if (j % 7771 == 0) {
+		datum1 = (rand()*BIT_RANGE)*(sin(2*PI*5140*i/SAMPLE_RATE));
+		j++;
+	} else if (j % 19820 == 0) {
+		datum1 = (rand()*BIT_RANGE)*(sin(2*PI*(rand()*10920)*i/SAMPLE_RATE));
+		j++;
+	} else {
+		datum1 = 0;
+		j++;
+	}
+*/
+
+	
+	short datum2 = 0;
+
+	/*
+	if (j % 23112 > 2 && j % 23112 < 10) {
+                datum2 = (rand()*BIT_RANGE)*(sin(2*PI*2340*i/SAMPLE_RATE));
+        } else if (j % 4214 == 0) {
+                datum2 = (rand()*BIT_RANGE)*(sin(2*PI*3440*i/SAMPLE_RATE));
+        } else if (j % 7424 == 0) {
+                datum2 = (rand()*BIT_RANGE)*(sin(2*PI*4240*i/SAMPLE_RATE));
+        } else if (j % 9799 == 0) {
+                datum2 = (rand()*BIT_RANGE)*(sin(2*PI*5140*i/SAMPLE_RATE));
+        } else if (j % 21892 == 0) {
+		datum2 = (rand()*BIT_RANGE)*(sin(2*PI*(rand() % 7800)*i/SAMPLE_RATE));
+        } else {
+		datum2 = 0;
 	}
 	*/
-        
-	if (j % 21112 == 0) {
-		datum1 = amp_x_bits*(sin(2*PI*2340*i/SAMPLE_RATE));
-	} else if (j % 3211 == 0) {
-		datum1 = amp_x_bits*(sin(2*PI*3440*i/SAMPLE_RATE));
-	} else if (j % 5121 == 0) {
-		datum1 = amp_x_bits*(sin(2*PI*4240*i/SAMPLE_RATE));
-	} else if (j % 7771 == 0) {
-		datum1 = amp_x_bits*(sin(2*PI*5140*i/SAMPLE_RATE));
-	} else if (j % 19820 == 0) {
-		datum1 = amp_x_bits*(sin(2*PI*(rand()*10920)*i/SAMPLE_RATE));
-	}
-
-	short datum2;
-
-	if (j % 23112 == 0) {
-                datum2 = amp_x_bits*(sin(2*PI*2340*i/SAMPLE_RATE));
-        } else if (j % 4214 == 0) {
-                datum2 = amp_x_bits*(sin(2*PI*3440*i/SAMPLE_RATE));
-        } else if (j % 7424 == 0) {
-                datum2 = amp_x_bits*(sin(2*PI*4240*i/SAMPLE_RATE));
-        } else if (j % 9799 == 0) {
-                datum2 = amp_x_bits*(sin(2*PI*5140*i/SAMPLE_RATE));
-        } else if (j % 21892 == 0) {
-		datum2 = amp_x_bits*(sin(2*PI*(rand() % 7800)*i/SAMPLE_RATE));
-        }
-	 // short datum2 = amp_x_bits*sin(2*PI*230*i/SAMPLE_RATE);
 
         sound[i]     = datum1; // One channel.
         sound[i + 1] = datum2; // Another channel.
